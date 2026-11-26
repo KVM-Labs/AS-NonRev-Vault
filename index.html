@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Non-Rev Sabermetrics Vault — KVM Labs</title>
+  <style> 
+:root {
+  --bg: #121226;
+  --surface: #1a1934;
+  --surface-alt: #14132a;
+  --border: #33315c;
+  --glow: rgba(77, 182, 172, 0.14);
+  --text: #f4f4fa;
+  --muted: #a8a7c7;
+  --accent: #45968f;
+  --accent-hover: #52aba3;
+  --accent-text: #071917;
+  --mint: #4fd1c5;
+  --pill-bg: #1e1d3b;
+  --pill-hover: #29274d;
+  --green: #4fd1c5;
+  --green-bg: rgba(79, 209, 197, 0.14);
+  --gold: #f6c453;
+  --gold-bg: rgba(246, 196, 83, 0.15);
+  --red: #fc8181;
+  --red-bg: rgba(252, 129, 129, 0.15);
+  --blue: #9f8cff;
+  --blue-bg: rgba(159, 140, 255, 0.15);
+}
+
+[data-theme="light"] {
+  --bg: #f5f5fb;
+  --surface: #ffffff;
+  --surface-alt: #efeef8;
+  --border: #d5d3eb;
+  --glow: rgba(69, 150, 143, 0.08);
+  --text: #16152b;
+  --muted: #5a587a;
+  --accent: #38857e;
+  --accent-hover: #2f736d;
+  --accent-text: #ffffff;
+  --mint: #2c7a7b;
+  --pill-bg: #ecebf7;
+  --pill-hover: #e0def2;
+  --green: #2c7a7b;
+  --green-bg: rgba(44, 122, 123, 0.12);
+  --gold: #c0841a;
+  --gold-bg: rgba(192, 132, 26, 0.12);
+  --red: #c53030;
+  --red-bg: rgba(197, 48, 48, 0.12);
+  --blue: #6b46c1;
+  --blue-bg: rgba(107, 70, 193, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #1b1a38 0%, var(--bg) 65%);
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  padding: 20px 16px 48px;
+  min-height: 100vh;
+}
+
+[data-theme="light"] body {
+  background: var(--bg);
+}
+
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.sys-tag {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, var(--text) 45%, #9f8cff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.shield-bar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.8rem;
+  color: var(--mint);
+  background: rgba(79, 209, 197, 0.08);
+  border: 1px solid rgba(79, 209, 197, 0.28);
+  border-radius: 12px;
+  padding: 9px 13px;
+  margin-top: 6px;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 8px var(--mint);
+}
+
+.top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill-btn {
+  background: var(--pill-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 9px 15px;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.pill-btn:hover {
+  background: var(--pill-hover);
+  border-color: var(--mint);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 8px;
+}
+
+.card h2 {
+  font-size: 1.15rem;
+  margin: 0;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.badge-count {
+  font-size: 0.78rem;
+  color: var(--mint);
+  background: rgba(79, 209, 197, 0.1);
+  border: 1px solid rgba(79, 209, 197, 0.3);
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 560px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+
+input, select {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 0.94rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus, select:focus {
+  border-color: var(--mint);
+  box-shadow: 0 0 0 2px rgba(79, 209, 197, 0.2);
+}
+
+.split-box {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 11px 12px;
+}
+
+.split-inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.split-inputs input {
+  background: var(--surface);
+  padding: 8px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.split-sep { color: var(--muted); font-weight: 600; }
+
+.calc-preview {
+  font-size: 0.78rem;
+  color: var(--mint);
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.live-banner {
+  background: linear-gradient(180deg, var(--surface-alt) 0%, rgba(79, 209, 197, 0.1) 100%);
+  border: 1.5px solid var(--mint);
+  border-radius: 14px;
+  padding: 11px 14px;
+  margin: 14px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.primary-btn {
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex: 1;
+  min-width: 160px;
+  transition: background 0.15s ease;
+}
+
+.primary-btn:hover { background: var(--accent-hover); }
+
+.matrix-wrap {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.matrix-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+#seatMatrix {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1.5px solid var(--mint);
+  border-radius: 14px;
+  background: #0e0e1f;
+}
+
+.matrix-hint {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.threshold-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 9px 12px;
+  margin-bottom: 12px;
+  font-size: 0.8rem;
+}
+
+.threshold-item { display: flex; align-items: center; gap: 6px; }
+.threshold-item input { width: 60px; padding: 5px 7px; text-align: center; background: var(--surface); }
+
+.table-wrap { overflow-x: auto; margin-top: 6px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; }
+
+.tag { padding: 3px 9px; border-radius: 999px; font-weight: 700; font-size: 0.7rem; display: inline-block; }
+.tag-first { background: var(--gold-bg); color: var(--gold); }
+.tag-row { background: var(--green-bg); color: var(--mint); }
+.tag-trap { background: var(--red-bg); color: var(--red); }
+.tag-tight { background: var(--surface-alt); color: var(--muted); }
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.74rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+
+.status-Y-First { background: var(--gold-bg); color: var(--gold); }
+.status-Y-Main { background: var(--green-bg); color: var(--green); }
+.status-N { background: var(--red-bg); color: var(--red); }
+.status-Pending { background: var(--surface-alt); color: var(--muted); }
+
+.del-btn { background: none; border: none; color: var(--muted); cursor: pointer; }
+.del-btn:hover { color: var(--red); }
+
+details.advanced {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+
+details.advanced summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text);
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+}
+
+details.advanced summary::-webkit-details-marker { display: none; }
+.adv-body { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+footer {
+  margin-top: 24px;
+  font-size: 0.76rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--accent-text);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.84rem;
+  display: none;
+  z-index: 100;
+}
+/* Two-tone Kaleidoscope title */
+.brand h1 {
+  font-size: 1.55rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.brand h1 span {
+  background: linear-gradient(90deg, #9f8cff 0%, #63b3ed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Prevent iOS Safari date & time inputs from overflowing right edge */
+.grid-2 > div,
+.grid-3 > div {
+  min-width: 0;
+}
+
+input,
+select {
+  min-width: 0;
+  max-width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="date"],
+input[type="time"] {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+}
+/* Alaska Dreamliner Livery Header for Day Mode */
+[data-theme="light"] .topbar {
+  background: linear-gradient(125deg, #011e41 0%, #063963 45%, #007a78 82%, #18b29b 100%);
+  padding: 18px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 25px rgba(1, 30, 65, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Swept aurora ribbon accent across the header */
+[data-theme="light"] .topbar::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -15%;
+  width: 65%;
+  height: 180%;
+  background: linear-gradient(180deg, rgba(79, 209, 197, 0.28) 0%, rgba(0, 168, 143, 0.05) 100%);
+  transform: rotate(24deg);
+  pointer-events: none;
+}
+
+[data-theme="light"] .topbar .brand h1 {
+  color: #ffffff;
+}
+
+[data-theme="light"] .topbar .brand h1 span {
+  background: linear-gradient(90deg, #7ef2e4 0%, #c4f7f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .topbar .pill-btn {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(6px);
+}
+
+[data-theme="light"] .topbar .pill-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: #7ef2e4;
+}
+
+[data-theme="light"] .topbar .shield-bar {
+  background: rgba(1, 30, 65, 0.45);
+  border-color: rgba(126, 242, 228, 0.35);
+  color: #c4f7f0;
+}
+/* Fix clipped empty-state messages in scrollable tables on mobile */
+td[colspan] {
+  font-size: 0.72rem;
+  white-space: normal;
+  padding: 12px 4px;
+}
+/* Keep Last Flight Toggle */
+.keep-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.keep-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  accent-color: var(--mint);
+  -webkit-appearance: auto;
+  appearance: auto;
+  cursor: pointer;
+  margin: 0;
+}
+</style>
+</head>
+<body>
+  <div class="container">
+        <header class="topbar">
+      <div class="brand">
+        <h1>Non-Rev <span>Load Vault</span></h1>
+      </div>
+      <div class="top-actions">
+        <button class="pill-btn" onclick="exportCSV()">⬇ Export CSV</button>
+        <label class="pill-btn" style="margin:0;">
+          ⬆ Import CSV
+          <input type="file" id="csvImport" accept=".csv" style="display:none;" onchange="importCSV(event)" />
+        </label>
+        <button class="pill-btn" id="themeToggle" onclick="toggleTheme()">☀ Day</button>
+      </div>
+      <div class="shield-bar">
+        <span class="pulse-dot"></span>
+        <span>On your device. Nothing leaves this browser unless you export a CSV.</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Log a flight load snapshot</h2>
+        <span class="badge-count" id="countBadge">0 entries</span>
+      </div>
+
+      <form id="flightForm">
+        <div class="grid-2">
+          <div>
+            <label for="date">Flight 📆 Date</label>
+            <input type="date" id="date" required />
+          </div>
+          <div>
+            <label for="flight">Flight #️⃣ Number</label>
+            <input type="text" id="flight" placeholder="AS324" required style="text-transform:uppercase;" />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label for="route">Route 🧭</label>
+            <input type="text" id="route" list="routePresets" placeholder="PDX-ORD" required style="text-transform:uppercase;" />
+            <datalist id="routePresets">
+              <option value="PDX-ANC">
+              <option value="ANC-PDX">
+              <option value="PDX-ORD">
+              <option value="ORD-PDX">
+              <option value="SEA-ANC">
+              <option value="ANC-SEA">
+            </datalist>
+          </div>
+          <div>
+            <label for="depTime">Departure Time ⏰</label>
+            <input type="time" id="depTime" required />
+          </div>
+        </div>
+
+                <div class="grid-3">
+          <div class="split-box">
+            <label>🌟 First (💺Avail / Cap)</label>
+            <div class="split-inputs">
+              <input type="number" id="firstBooked" value="3" min="0" oninput="updateLivePreview()" required />
+              <span class="split-sep">of</span>
+              <input type="number" id="firstCap" value="16" min="1" oninput="updateLivePreview()" required />
+            </div>
+            <div class="calc-preview" id="firstPreview">3 First avail</div>
+          </div>
+
+          <div class="split-box">
+            <label>Economy (💺Avail / Cap)</label>
+            <div class="split-inputs">
+              <input type="number" id="mainBooked" value="80" min="0" oninput="updateLivePreview()" required />
+              <span class="split-sep">of</span>
+              <input type="number" id="mainCap" value="145" min="1" oninput="updateLivePreview()" required />
+            </div>
+            <div class="calc-preview" id="mainPreview">80 Main avail</div>
+          </div>
+
+          <div class="split-box">
+            <label for="standby">Stand-by List 📋 Count</label>
+            <div class="split-inputs">
+              <input type="number" id="standby" value="0" min="0" oninput="updateLivePreview()" required />
+            </div>
+            <div class="calc-preview" id="cushionPreview">+3 First cushion</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label for="obsTime">Time ⏱️ Observed</label>
+            <input type="time" id="obsTime" required />
+          </div>
+          <div>
+            <label for="cleared">Gate Outcome</label>
+            <select id="cleared">
+              <option value="Pending">Pending (Watching / At Gate)</option>
+              <option value="Y-First">Y (First) — Cleared First/Business</option>
+              <option value="Y-Main">Y (Main) — Cleared Economy</option>
+              <option value="N">N — Rolled / Didn't Clear</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="notes">Notes 📝 (optional)</label>
+          <input type="text" id="notes" placeholder="Elite upgrade list length, weight restriction, aircraft swap..." />
+        </div>
+
+        <div class="live-banner">
+          <span id="liveMetrics">Total Load: <strong>48%</strong> · Total Open: <strong>83</strong></span>
+          <span id="liveSignal"></span>
+        </div>
+
+                <div class="btn-row">
+          <button type="submit" class="primary-btn">Save Snapshot</button>
+          <button type="button" class="pill-btn" onclick="stampNow()">🕒 Stamp Now</button>
+        </div>
+        <label class="keep-toggle">
+          <input type="checkbox" id="keepLastToggle" checked onchange="saveLastFlightState()" />
+          <span>Keep last Flight #, Route &amp; Dep Time</span>
+        </label>
+      </form>
+
+      <ol class="steps">
+        <li><strong>Enter Not Available / Capacity</strong> straight from your flight screen (e.g., <code>13 of 16</code> and <code>65 of 145</code>)—the vault calculates open seats and load factor automatically.</li>
+        <li><strong>Toggle your outcome at the gate</strong> by tapping the status pill in your saved log (<code>Pending</code> → <code>Y-First</code> → <code>Y-Main</code> → <code>N</code>).</li>
+        <li><strong>Let the dataset build</strong>—once a Route + Weekday + Hour hits 5–10 entries, the Sabermetrics table reveals which departures consistently clear First Class or empty rows.</li>
+      </ol>
+
+      <div class="privacy-note">
+        <strong>How it works:</strong> Everything runs locally in your browser. Your flight logs stay 100% private on your device until you export a CSV backup.
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Ready for boarding — Undervalued flights</h2>
+        <span class="badge-count" id="patternCount">0 groups</span>
+      </div>
+
+      <div class="threshold-bar">
+        <div class="threshold-item">
+          <label for="threshFirst" style="margin:0;">First target ≥</label>
+          <input type="number" id="threshFirst" value="6" min="1" max="50" onchange="saveSettings()" />
+          <span style="color:var(--muted);">open</span>
+        </div>
+        <div class="threshold-item">
+          <label for="threshMain" style="margin:0;">Row target ≥</label>
+          <input type="number" id="threshMain" value="50" min="1" max="200" onchange="saveSettings()" />
+          <span style="color:var(--muted);">open</span>
+        </div>
+        <div class="threshold-item">
+          <label for="minFlights" style="margin:0;">Min sample:</label>
+          <input type="number" id="minFlights" value="1" min="1" max="50" onchange="renderAll()" />
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Route</th>
+              <th>Day</th>
+              <th>Dep Hr</th>
+              <th>Sample</th>
+              <th>Avg 1st Open</th>
+              <th>Avg Stby</th>
+              <th>Avg Load</th>
+              <th>1st Target %</th>
+              <th>Row Target %</th>
+            </tr>
+          </thead>
+          <tbody id="patternsBody"></tbody>
+        </table>
+      </div>
+      <div style="font-size:0.8rem; color:var(--muted); margin-top:10px;">
+        Sorted by <strong>First Target %</strong>, then lowest average standby. Treat groups under 10 samples as early scouting; 10+ samples become reliable patterns.
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Saved flight snapshots</h2>
+        <span style="font-size:0.78rem; color:var(--muted);">Tap outcome pill to cycle</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Flight</th>
+              <th>Route</th>
+              <th>Dep (Obs)</th>
+              <th>1st Open</th>
+              <th>Main Open</th>
+              <th>Stby</th>
+              <th>Load</th>
+              <th>Signal</th>
+              <th>Outcome</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <details class="advanced">
+      <summary>
+        <span>⚙ Advanced Controls &amp; Dataset Backup</span>
+        <span style="font-size:0.8rem; color:var(--muted);">Expand</span>
+      </summary>
+      <div class="adv-body">
+        <p style="font-size:0.84rem; color:var(--muted); margin-top:0;">
+          Export your dataset as a CSV file anytime to back it up or run custom Python analysis on your laptop.
+        </p>
+        <div class="btn-row">
+          <button class="pill-btn" onclick="exportCSV()">⬇ Download flights.csv</button>
+          <button class="pill-btn" style="color:var(--red);" onclick="clearAllData()">🗑 Clear Browser Dataset</button>
+        </div>
+      </div>
+    </details>
+
+    <footer>
+      Non-Rev Load Vault · © KVM Labs · Released under the MIT License.<br />
+      Provided “AS IS”, without warranty of any kind. Data stays locally in your browser—export regular CSV backups.
+    </footer>
+  </div>
+
+  <div id="toast" class="toast">Saved!</div>
+  <script>const STORAGE_KEY = "kvm_nonrev_sabermetrics_v1";
+const SETTINGS_KEY = "kvm_nonrev_thresholds_v1";
+const THEME_KEY = "kvm_nonrev_theme";
+
+const CSV_HEADERS = [
+  "Date", "Flight", "Route", "Departure time", "Time observed",
+  "First class open", "Main open", "Standby count", "Cleared (Y/N)", "Notes",
+  "First booked", "First cap", "Main booked", "Main cap"
+];
+
+let logs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{"threshFirst":6,"threshMain":50}');
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem(THEME_KEY, theme);
+  document.getElementById("themeToggle").textContent = theme === "dark" ? "☀ Day" : "🌙 Night";
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute("data-theme") || "dark";
+  applyTheme(current === "dark" ? "light" : "dark");
+}
+
+function loadSettings() {
+  document.getElementById("threshFirst").value = settings.threshFirst ?? 6;
+  document.getElementById("threshMain").value = settings.threshMain ?? 50;
+}
+
+function saveSettings() {
+  settings.threshFirst = parseInt(document.getElementById("threshFirst").value, 10) || 6;
+  settings.threshMain = parseInt(document.getElementById("threshMain").value, 10) || 50;
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  updateLivePreview();
+  renderAll();
+}
+
+function stampNow() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const hh = String(now.getHours()).padStart(2, "0");
+  const min = String(now.getMinutes()).padStart(2, "0");
+  document.getElementById("date").value = yyyy + "-" + mm + "-" + dd;
+  document.getElementById("obsTime").value = hh + ":" + min;
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.style.display = "block";
+  setTimeout(function() { t.style.display = "none"; }, 2200);
+}
+
+function evaluateSignal(firstOpen, mainOpen, standby, loadPct) {
+  const tFirst = settings.threshFirst;
+  const tMain = settings.threshMain;
+  const netFirst = firstOpen - standby;
+
+  if (firstOpen >= tFirst && netFirst >= 2 && loadPct <= 75) {
+    return { label: "🌟 FIRST PLAY", cls: "tag-first" };
+  }
+  if (firstOpen >= tFirst && loadPct > 85) {
+    return { label: "⚠️ UPGRADE TRAP", cls: "tag-trap" };
+  }
+  if (mainOpen >= tMain && standby <= 5) {
+    return { label: "🛋 EMPTY ROW", cls: "tag-row" };
+  }
+  if (firstOpen >= tFirst) {
+    return { label: "✨ FIRST BUFFER", cls: "tag-first" };
+  }
+  return { label: "STANDARD", cls: "tag-tight" };
+}
+
+function updateLivePreview() {
+  const fOpen = Math.max(0, parseInt(document.getElementById("firstBooked").value, 10) || 0);
+  const fCap = Math.max(1, parseInt(document.getElementById("firstCap").value, 10) || 16);
+  const mOpen = Math.max(0, parseInt(document.getElementById("mainBooked").value, 10) || 0);
+  const mCap = Math.max(1, parseInt(document.getElementById("mainCap").value, 10) || 145);
+  const stby = parseInt(document.getElementById("standby").value, 10) || 0;
+
+  const fBooked = Math.max(0, fCap - fOpen);
+  const mBooked = Math.max(0, mCap - mOpen);
+  const loadPct = Math.round(((fBooked + mBooked) / (fCap + mCap)) * 100);
+  const netFirst = fOpen - stby;
+
+  document.getElementById("firstPreview").textContent = fOpen + " First avail";
+  document.getElementById("mainPreview").textContent = mOpen + " Main avail";
+  document.getElementById("cushionPreview").textContent = (netFirst >= 0 ? "+" : "") + netFirst + " First cushion";
+
+  document.getElementById("liveMetrics").innerHTML =
+    "Total Load: <strong>" + loadPct + "%</strong> · Total Avail: <strong>" + (fOpen + mOpen) + "</strong>";
+
+  const sig = evaluateSignal(fOpen, mOpen, stby, loadPct);
+  document.getElementById("liveSignal").innerHTML = '<span class="tag ' + sig.cls + '">' + sig.label + '</span>';
+}
+
+function saveLogs() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+  renderAll();
+}
+
+function renderAll() {
+  document.getElementById("countBadge").textContent = logs.length + (logs.length === 1 ? " entry" : " entries");
+  renderPatterns();
+  renderHistory();
+}
+
+document.getElementById("flightForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const fOpen = Math.max(0, parseInt(document.getElementById("firstBooked").value, 10) || 0);
+  const fCap = Math.max(1, parseInt(document.getElementById("firstCap").value, 10) || 16);
+  const mOpen = Math.max(0, parseInt(document.getElementById("mainBooked").value, 10) || 0);
+  const mCap = Math.max(1, parseInt(document.getElementById("mainCap").value, 10) || 145);
+
+  const entry = {
+    id: Date.now(),
+    date: document.getElementById("date").value,
+    flight: document.getElementById("flight").value.trim().toUpperCase(),
+    route: document.getElementById("route").value.trim().toUpperCase(),
+    depTime: document.getElementById("depTime").value,
+    obsTime: document.getElementById("obsTime").value,
+    firstBooked: Math.max(0, fCap - fOpen),
+    firstCap: fCap,
+    mainBooked: Math.max(0, mCap - mOpen),
+    mainCap: mCap,
+    firstOpen: fOpen,
+    mainOpen: mOpen,
+    standby: parseInt(document.getElementById("standby").value, 10) || 0,
+    cleared: document.getElementById("cleared").value,
+    notes: document.getElementById("notes").value.trim()
+  };
+
+  logs.unshift(entry);
+  saveLogs();
+  saveLastFlightState();
+  document.getElementById("notes").value = "";
+  stampNow();
+  updateLivePreview();
+  showToast("Saved " + entry.flight + " (" + entry.route + ")");
+});
+
+
+function cycleStatus(id) {
+  const order = ["Pending", "Y-First", "Y-Main", "N"];
+  const item = logs.find(function(l) { return l.id === id; });
+  if (!item) return;
+  item.cleared = order[(order.indexOf(item.cleared) + 1) % order.length];
+  saveLogs();
+  showToast(item.flight + " → " + item.cleared);
+}
+
+function deleteEntry(id) {
+  if (!confirm("Delete this flight snapshot?")) return;
+  logs = logs.filter(function(l) { return l.id !== id; });
+  saveLogs();
+}
+
+function clearAllData() {
+  if (!confirm("Clear all flight entries from this browser? Export a CSV backup first if needed.")) return;
+  logs = [];
+  saveLogs();
+  showToast("Browser dataset cleared");
+}
+function escapeHtml(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function renderPatterns() {
+  const minCount = parseInt(document.getElementById("minFlights").value, 10) || 1;
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const groups = {};
+
+  logs.forEach(function(l) {
+    const d = new Date(l.date + "T12:00:00");
+    const weekday = isNaN(d.getTime()) ? "?" : days[d.getDay()];
+    const depHour = (l.depTime || "00:00").slice(0, 2);
+    const key = l.route + "|" + weekday + "|" + depHour;
+
+    const cap = (l.firstCap && l.mainCap) ? (l.firstCap + l.mainCap) : 161;
+    const booked = (l.firstBooked != null && l.mainBooked != null)
+      ? (l.firstBooked + l.mainBooked)
+      : Math.max(0, cap - (l.firstOpen + l.mainOpen));
+    const loadPct = Math.round((booked / cap) * 100);
+
+    if (!groups[key]) {
+      groups[key] = {
+        route: l.route, weekday: weekday, depHour: depHour, count: 0,
+        firstOpenSum: 0, standbySum: 0, loadSum: 0, firstHits: 0, rowHits: 0
+      };
+    }
+    const g = groups[key];
+    g.count++;
+    g.firstOpenSum += l.firstOpen;
+    g.standbySum += l.standby;
+    g.loadSum += loadPct;
+    if (l.firstOpen >= settings.threshFirst) g.firstHits++;
+    if (l.mainOpen >= settings.threshMain) g.rowHits++;
+  });
+
+  const rows = Object.values(groups)
+    .filter(function(g) { return g.count >= minCount; })
+    .map(function(g) {
+      return {
+        route: g.route,
+        weekday: g.weekday,
+        depHour: g.depHour,
+        count: g.count,
+        avgFirst: g.firstOpenSum / g.count,
+        avgStby: g.standbySum / g.count,
+        avgLoad: Math.round(g.loadSum / g.count),
+        firstPct: Math.round((g.firstHits / g.count) * 100),
+        rowPct: Math.round((g.rowHits / g.count) * 100)
+      };
+    })
+    .sort(function(a, b) { return (b.firstPct - a.firstPct) || (a.avgStby - b.avgStby); });
+
+  document.getElementById("patternCount").textContent = rows.length + (rows.length === 1 ? " group" : " groups");
+
+  const tbody = document.getElementById("patternsBody");
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" class="empty-msg">No route/time groups meet<br>the minimum sample size yet.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(function(r) {
+    return '<tr>' +
+      '<td><strong>' + escapeHtml(r.route) + '</strong></td>' +
+      '<td>' + r.weekday + '</td>' +
+      '<td>' + r.depHour + ':00</td>' +
+      '<td>' + r.count + '</td>' +
+      '<td><strong>' + r.avgFirst.toFixed(1) + '</strong></td>' +
+      '<td>' + r.avgStby.toFixed(1) + '</td>' +
+      '<td>' + r.avgLoad + '%</td>' +
+      '<td><strong style="color:var(--gold);">' + r.firstPct + '%</strong></td>' +
+      '<td><strong style="color:var(--blue);">' + r.rowPct + '%</strong></td>' +
+      '</tr>';
+  }).join("");
+}
+
+function renderHistory() {
+  const tbody = document.getElementById("historyBody");
+  if (logs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11" class="empty-msg">No flights logged yet.<br>Add your first snapshot above.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = logs.map(function(l) {
+    const cap = (l.firstCap && l.mainCap) ? (l.firstCap + l.mainCap) : 161;
+    const booked = (l.firstBooked != null && l.mainBooked != null)
+      ? (l.firstBooked + l.mainBooked)
+      : Math.max(0, cap - (l.firstOpen + l.mainOpen));
+    const loadPct = Math.round((booked / cap) * 100);
+    const sig = evaluateSignal(l.firstOpen, l.mainOpen, l.standby, loadPct);
+    const statusCls = ["Y-First", "Y-Main", "N", "Pending"].indexOf(l.cleared) !== -1 ? l.cleared : "Pending";
+
+    return '<tr>' +
+            '<td>' + escapeHtml(l.date.slice(5)) + '</td>' + '<td><strong>' + escapeHtml(l.flight) + '</strong></td>' +
+      '<td>' + escapeHtml(l.route) + '</td>' +
+      '<td>' + escapeHtml(l.depTime) + ' <span style="color:var(--muted); font-size:0.75rem;">(' + escapeHtml(l.obsTime) + ')</span></td>' +
+      '<td><strong>' + l.firstOpen + '</strong> <span style="color:var(--muted); font-size:0.75rem;">/' + (l.firstCap || "?") + '</span></td>' +
+      '<td><strong>' + l.mainOpen + '</strong> <span style="color:var(--muted); font-size:0.75rem;">/' + (l.mainCap || "?") + '</span></td>' +
+      '<td>' + l.standby + '</td>' +
+      '<td>' + loadPct + '%</td>' +
+      '<td><span class="tag ' + sig.cls + '">' + sig.label + '</span></td>' +
+      '<td><button class="status-pill status-' + statusCls + '" onclick="cycleStatus(' + l.id + ')">' + statusCls + '</button></td>' +
+      '<td><button class="del-btn" title="Delete" onclick="deleteEntry(' + l.id + ')">✕</button></td>' +
+      '</tr>';
+  }).join("");
+}
+
+async function exportCSV() {
+  const escapeCSV = function(val) { return '"' + String(val == null ? "" : val).replace(/"/g, '""') + '"'; };
+  const lines = [CSV_HEADERS.join(",")];
+  logs.forEach(function(l) {
+    lines.push([
+      l.date, l.flight, l.route, l.depTime, l.obsTime,
+      l.firstOpen, l.mainOpen, l.standby, l.cleared, l.notes,
+      l.firstBooked != null ? l.firstBooked : "",
+      l.firstCap != null ? l.firstCap : "",
+      l.mainBooked != null ? l.mainBooked : "",
+      l.mainCap != null ? l.mainCap : ""
+    ].map(escapeCSV).join(","));
+  });
+
+  const csvText = lines.join("\n");
+  const today = new Date().toISOString().split("T")[0];
+  const fileName = "flights_" + today + ".csv";
+
+  if (navigator.canShare && typeof File !== "undefined") {
+    try {
+      const file = new File([csvText], fileName, { type: "text/csv" });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: fileName });
+        showToast("CSV shared!");
+        return;
+      }
+    } catch (err) {
+      if (err && err.name === "AbortError") return;
+    }
+  }
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (!isIOS) {
+    const blob = new Blob([csvText], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Downloaded " + fileName);
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(csvText);
+    showToast("CSV copied to clipboard (" + logs.length + " rows)!");
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = csvText;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showToast("CSV copied to clipboard (" + logs.length + " rows)!");
+  }
+}
+
+function importCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lines = e.target.result.split(/\r?\n/).filter(function(line) { return line.trim() !== ""; });
+    if (lines.length < 2) return;
+    const imported = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = parseCSVLine(lines[i]);
+      if (cols.length >= 9) {
+        const firstOpen = parseInt(cols[5], 10) || 0;
+        const mainOpen = parseInt(cols[6], 10) || 0;
+        const firstCap = parseInt(cols[11], 10) || 16;
+        const mainCap = parseInt(cols[13], 10) || 145;
+        const firstBooked = (cols[10] !== undefined && cols[10] !== "") ? parseInt(cols[10], 10) : Math.max(0, firstCap - firstOpen);
+        const mainBooked = (cols[12] !== undefined && cols[12] !== "") ? parseInt(cols[12], 10) : Math.max(0, mainCap - mainOpen);
+
+        imported.push({
+          id: Date.now() + i,
+          date: cols[0].trim(),
+          flight: cols[1].trim().toUpperCase(),
+          route: cols[2].trim().toUpperCase(),
+          depTime: cols[3].trim(),
+          obsTime: cols[4].trim(),
+          firstOpen: firstOpen,
+          mainOpen: mainOpen,
+          standby: parseInt(cols[7], 10) || 0,
+          cleared: cols[8].trim() || "Pending",
+          notes: (cols[9] || "").trim(),
+          firstBooked: firstBooked,
+          firstCap: firstCap,
+          mainBooked: mainBooked,
+          mainCap: mainCap
+        });
+      }
+    }
+    logs = imported.concat(logs);
+    saveLogs();
+    event.target.value = "";
+    showToast("Imported " + imported.length + " flight" + (imported.length === 1 ? "" : "s"));
+  };
+  reader.readAsText(file);
+}
+
+applyTheme(localStorage.getItem(THEME_KEY) || "dark");
+loadSettings();
+stampNow();
+updateLivePreview();
+renderAll();
+const LAST_FLIGHT_KEY = "kvm_nonrev_last_flight_v1";
+
+function saveLastFlightState() {
+  const keep = document.getElementById("keepLastToggle").checked;
+  const payload = {
+    keep: keep,
+    flight: document.getElementById("flight").value.trim().toUpperCase(),
+    route: document.getElementById("route").value.trim().toUpperCase(),
+    depTime: document.getElementById("depTime").value,
+    firstCap: document.getElementById("firstCap").value,
+    mainCap: document.getElementById("mainCap").value
+  };
+  localStorage.setItem(LAST_FLIGHT_KEY, JSON.stringify(payload));
+}
+
+function loadLastFlightState() {
+  const saved = JSON.parse(localStorage.getItem(LAST_FLIGHT_KEY) || "null");
+  if (!saved) return;
+  const toggle = document.getElementById("keepLastToggle");
+  toggle.checked = saved.keep !== false;
+
+  if (toggle.checked) {
+    if (saved.flight) document.getElementById("flight").value = saved.flight;
+    if (saved.route) document.getElementById("route").value = saved.route;
+    if (saved.depTime) document.getElementById("depTime").value = saved.depTime;
+    if (saved.firstCap) document.getElementById("firstCap").value = saved.firstCap;
+    if (saved.mainCap) document.getElementById("mainCap").value = saved.mainCap;
+    updateLivePreview();
+  }
+}
+
+document.getElementById("flightForm").addEventListener("submit", function() {
+  const keep = document.getElementById("keepLastToggle").checked;
+  saveLastFlightState();
+  if (!keep) {
+    document.getElementById("flight").value = "";
+    document.getElementById("route").value = "";
+    document.getElementById("depTime").value = "";
+  }
+});
+
+loadLastFlightState();
+</script>
+</body>
+</html>
